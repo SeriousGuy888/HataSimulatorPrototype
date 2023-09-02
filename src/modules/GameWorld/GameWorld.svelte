@@ -26,6 +26,8 @@
   let panningPrevX = 0
   let panningPrevY = 0
 
+  let isPlacing = false
+
   let sideLength: number
   let apothem: number
 
@@ -114,10 +116,18 @@
         panningPrevX = event.clientX
         panningPrevY = event.clientY
       }
+
+      if (event.button === 2) {
+        isPlacing = true
+      }
     }}
     on:mouseup={(event) => {
       if (isPanning) {
         isPanning = false
+      }
+
+      if (isPlacing) {
+        isPlacing = false
       }
 
       // If the user is left-clicking, select the tile under the cursor
@@ -133,8 +143,32 @@
         selectedCoords = { x: tileX, y: tileY }
       }
 
+      if (event.button === 2 && event.shiftKey) {
+        // Calculate cursor position in screen coordinates
+        const screenX = event.clientX - canvas.getBoundingClientRect().left
+        const screenY = event.clientY - canvas.getBoundingClientRect().top
+
+        // Calculate cursor position in world coordinates
+        const { worldX, worldY } = screenToWorld(view, screenX, screenY)
+        const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
+        
+        tilemap.floodFill(tileX, tileY, selectedTileType)
+      }
+    }}
+    on:mousemove={(event) => {
+      if (isPanning) {
+        const deltaX = event.clientX - panningPrevX
+        const deltaY = event.clientY - panningPrevY
+
+        view.x -= deltaX / view.zoom
+        view.y -= deltaY / view.zoom
+
+        panningPrevX = event.clientX
+        panningPrevY = event.clientY
+      }
+
       // If the user is right-clicking, place a tile
-      if (event.button === 2) {
+      if (isPlacing) {
         // Calculate cursor position in screen coordinates
         const screenX = event.clientX - canvas.getBoundingClientRect().left
         const screenY = event.clientY - canvas.getBoundingClientRect().top
@@ -143,22 +177,8 @@
         const { worldX, worldY } = screenToWorld(view, screenX, screenY)
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
 
-        tilemap.setTile(tileX, tileY, { type: selectedTileType, x: tileX, y: tileY })
+        tilemap.setTile(tileX, tileY, selectedTileType)
       }
-    }}
-    on:mousemove={(event) => {
-      if (!isPanning) {
-        return
-      }
-
-      const deltaX = event.clientX - panningPrevX
-      const deltaY = event.clientY - panningPrevY
-
-      view.x -= deltaX / view.zoom
-      view.y -= deltaY / view.zoom
-
-      panningPrevX = event.clientX
-      panningPrevY = event.clientY
     }}
     on:mouseleave={() => (isPanning = false)}
   />
