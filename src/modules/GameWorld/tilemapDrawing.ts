@@ -59,6 +59,13 @@ function getHexPath(sideLength: number, apothem: number) {
   return hexPath
 }
 
+const tileTypeColors = {
+  grass: "#1b1",
+  water: "#02f",
+  sand: "#ee8",
+  rock: "#666",
+}
+
 function drawHex(
   ctx: CanvasRenderingContext2D,
   view: View,
@@ -74,7 +81,7 @@ function drawHex(
   ctx.translate(centerX, centerY)
 
   // Fill hexagon
-  ctx.fillStyle = "#07bb07"
+  ctx.fillStyle = tileTypeColors[tile.type]
   ctx.fill(hexPath)
 
   // Outline hexagon
@@ -83,11 +90,11 @@ function drawHex(
   ctx.stroke(hexPath)
 
   // Draw hex coordinates on hexagon center
-  ctx.fillStyle = "#000000"
-  ctx.font = `${24 * view.zoom}px Consolas`
-  ctx.textAlign = "center"
-  ctx.textBaseline = "middle"
-  ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+  // ctx.fillStyle = "#000000"
+  // ctx.font = `${24 * view.zoom}px Consolas`
+  // ctx.textAlign = "center"
+  // ctx.textBaseline = "middle"
+  // ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
 
   // Restore context state
   ctx.restore()

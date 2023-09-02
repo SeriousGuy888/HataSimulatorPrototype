@@ -11,7 +11,8 @@ export interface Tile {
   y: number
 }
 
-export type TileType = "grass" | "water" | "sand" | "rock"
+export const tileTypes = ["grass", "water", "sand", "rock"] as const
+export type TileType = typeof tileTypes[number]
 
 export interface Character {
   name: string
