@@ -5,6 +5,7 @@
   import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
   import { screenToWorld, worldToTile } from "./cameraUtils"
+  import { tileTypes, type TileType } from "$lib/types"
 
   export let tilemap: Tilemap
 
@@ -19,6 +20,7 @@
   }
 
   let selectedCoords: { x: number; y: number } | null = null
+  let selectedTileType: TileType = tileTypes[0]
 
   let isPanning = false
   let panningPrevX = 0
@@ -141,7 +143,7 @@
         const { worldX, worldY } = screenToWorld(view, screenX, screenY)
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
 
-        tilemap.setTile(tileX, tileY, { type: "grass", x: tileX, y: tileY })
+        tilemap.setTile(tileX, tileY, { type: selectedTileType, x: tileX, y: tileY })
       }
     }}
     on:mousemove={(event) => {
@@ -175,31 +177,45 @@
       Selected tile: {selectedCoords?.x ?? "_"},{selectedCoords?.y ?? "_"}
     </p>
     <hr class="my-4" />
-    <section class="flex flex-row gap-2">
-      <button
-        on:click={() => {
-          const ser = tilemap.serialise()
-          navigator.clipboard.writeText(ser)
-          alert("Copied to clipboard")
-        }}
-        class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
-      >
-        Serialise
-      </button>
-      <button
-        on:click={() => {
-          const ser = prompt("Paste serialised tilemap", "")
-          if (ser) {
-            try {
-              const newTilemap = Tilemap.deserialise(ser)
-              tilemap = newTilemap
-            } catch (e) {
-              alert("Invalid serialised tilemap: " + e)
+    <section class="grid gap-2">
+      <div class="flex flex-row gap-2">
+        <button
+          on:click={() => {
+            const ser = tilemap.serialise()
+            navigator.clipboard.writeText(ser)
+            alert("Copied to clipboard")
+          }}
+          class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
+        >
+          Serialise
+        </button>
+        <button
+          on:click={() => {
+            const ser = prompt("Paste serialised tilemap", "")
+            if (ser) {
+              try {
+                const newTilemap = Tilemap.deserialise(ser)
+                tilemap = newTilemap
+              } catch (e) {
+                alert("Invalid serialised tilemap: " + e)
+              }
             }
-          }
-        }}
-        class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1">Load</button
-      >
+          }}
+          class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1">Load</button
+        >
+      </div>
+      <ul class="columns-2">
+        {#each tileTypes as type}
+          <li>
+            <button
+              class={selectedTileType === type ? "underline" : ""}
+              on:click={() => (selectedTileType = type)}
+            >
+              {type}
+            </button>
+          </li>
+        {/each}
+      </ul>
     </section>
   </aside>
 </section>
