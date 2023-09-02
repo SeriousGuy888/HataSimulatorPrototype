@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from "$app/environment"
-  import type { Tilemap } from "$lib/Tilemap"
+  import { Tilemap } from "$lib/Tilemap"
   import { onMount } from "svelte"
   import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
@@ -38,6 +38,8 @@
 
   onMount(() => {
     resizeCanvasToFullScreen()
+
+    // window.tilemap = tilemap.serialise()
 
     const ctx = canvas.getContext("2d")
     if (!ctx) {
@@ -104,8 +106,8 @@
       view.y = worldY - screenY / view.zoom
     }}
     on:mousedown={(event) => {
-      // If the user is right-clicking or middle-clicking, start panning
-      if (event.button === 1 || event.button === 2) {
+      // If the user is middle-clicking, start panning
+      if (event.button === 1) {
         isPanning = true
         panningPrevX = event.clientX
         panningPrevY = event.clientY
@@ -127,6 +129,19 @@
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
 
         selectedCoords = { x: tileX, y: tileY }
+      }
+
+      // If the user is right-clicking, place a tile
+      if (event.button === 2) {
+        // Calculate cursor position in screen coordinates
+        const screenX = event.clientX - canvas.getBoundingClientRect().left
+        const screenY = event.clientY - canvas.getBoundingClientRect().top
+
+        // Calculate cursor position in world coordinates
+        const { worldX, worldY } = screenToWorld(view, screenX, screenY)
+        const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
+
+        tilemap.setTile(tileX, tileY, { type: "grass", x: tileX, y: tileY })
       }
     }}
     on:mousemove={(event) => {
@@ -159,5 +174,32 @@
     <p>
       Selected tile: {selectedCoords?.x ?? "_"},{selectedCoords?.y ?? "_"}
     </p>
+    <hr class="my-4" />
+    <section class="flex flex-row gap-2">
+      <button
+        on:click={() => {
+          const ser = tilemap.serialise()
+          navigator.clipboard.writeText(ser)
+          alert("Copied to clipboard")
+        }}
+        class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
+      >
+        Serialise
+      </button>
+      <button
+        on:click={() => {
+          const ser = prompt("Paste serialised tilemap", "")
+          if (ser) {
+            try {
+              const newTilemap = Tilemap.deserialise(ser)
+              tilemap = newTilemap
+            } catch (e) {
+              alert("Invalid serialised tilemap: " + e)
+            }
+          }
+        }}
+        class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1">Load</button
+      >
+    </section>
   </aside>
 </section>
