@@ -121,6 +121,7 @@
       lastMouseX = event.clientX
       lastMouseY = event.clientY
     }}
+    on:mouseleave={() => (isPanning = false)}
   />
 
   <aside
