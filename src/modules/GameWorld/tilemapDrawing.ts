@@ -1,5 +1,6 @@
 import type { Tilemap } from "$lib/Tilemap"
 import type { Tile } from "$lib/types"
+import { tileToWorld, worldToScreen } from "./cameraUtils"
 import type { View } from "./canvasTypes"
 
 export function drawTilemap(
@@ -28,15 +29,8 @@ export function drawTilemap(
     for (let y = topmostY; y < bottommostY; y++) {
       const tile = tilemap.getTile(x, y)
       if (tile) {
-        const yOffset = x % 2 === 1 ? 0 : apothem / view.zoom
-
-        // Calculate the center of the hexagon in world coordinates
-        const worldX = x * xGap + sideLength
-        const worldY = y * yGap + apothem + yOffset
-
-        // Apply zoom and view offset
-        const screenX = (worldX - view.x) * view.zoom
-        const screenY = (worldY - view.y) * view.zoom
+        const { worldX, worldY } = tileToWorld(view, x, y, sideLength, apothem)
+        const { screenX, screenY } = worldToScreen(view, worldX, worldY)
 
         drawHex(ctx, view, hexPath, screenX, screenY, tile)
       }
@@ -90,11 +84,11 @@ function drawHex(
   // ctx.stroke(hexPath)
 
   // Draw hex coordinates on hexagon center
-  // ctx.fillStyle = "#000000"
-  // ctx.font = `${24 * view.zoom}px Consolas`
-  // ctx.textAlign = "center"
-  // ctx.textBaseline = "middle"
-  // ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+  ctx.fillStyle = "#000000"
+  ctx.font = `${24 * view.zoom}px Consolas`
+  ctx.textAlign = "center"
+  ctx.textBaseline = "middle"
+  ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
 
   // Restore context state
   ctx.restore()

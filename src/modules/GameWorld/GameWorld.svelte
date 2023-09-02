@@ -5,6 +5,7 @@
   import { onMount } from "svelte"
   import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
+  import { screenToWorld, worldToTile } from "./cameraUtils"
 
   export let tilemap: Tilemap
 
@@ -18,9 +19,11 @@
     zoom: 1,
   }
 
+  let selectedTile: Tile | null = null
+
   let isPanning = false
-  let lastMouseX = 0
-  let lastMouseY = 0
+  let panningPrevX = 0
+  let panningPrevY = 0
 
   let sideLength: number
   let apothem: number
@@ -102,24 +105,44 @@
       view.y = worldY - screenY / view.zoom
     }}
     on:mousedown={(event) => {
-      isPanning = true
-      lastMouseX = event.clientX
-      lastMouseY = event.clientY
+      // If the user is right-clicking or middle-clicking, start panning
+      if (event.button === 1 || event.button === 2) {
+        isPanning = true
+        panningPrevX = event.clientX
+        panningPrevY = event.clientY
+      }
     }}
-    on:mouseup={() => (isPanning = false)}
+    on:mouseup={(event) => {
+      if (isPanning) {
+        isPanning = false
+      }
+
+      // If the user is left-clicking, select the tile under the cursor
+      if (event.button === 0) {
+        // Calculate cursor position in screen coordinates
+        const screenX = event.clientX - canvas.getBoundingClientRect().left
+        const screenY = event.clientY - canvas.getBoundingClientRect().top
+
+        // Calculate cursor position in world coordinates
+        const { worldX, worldY } = screenToWorld(view, screenX, screenY)
+        const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
+
+        selectedTile = tilemap.getTile(tileX, tileY)
+      }
+    }}
     on:mousemove={(event) => {
       if (!isPanning) {
         return
       }
 
-      const deltaX = event.clientX - lastMouseX
-      const deltaY = event.clientY - lastMouseY
+      const deltaX = event.clientX - panningPrevX
+      const deltaY = event.clientY - panningPrevY
 
       view.x -= deltaX / view.zoom
       view.y -= deltaY / view.zoom
 
-      lastMouseX = event.clientX
-      lastMouseY = event.clientY
+      panningPrevX = event.clientX
+      panningPrevY = event.clientY
     }}
     on:mouseleave={() => (isPanning = false)}
   />
@@ -134,5 +157,8 @@
       <p>X: {view.x.toFixed(2)}</p>
       <p>Y: {view.y.toFixed(2)}</p>
     </section>
+    <p>
+      Selected tile: {selectedTile?.x ?? "_"},{selectedTile?.y ?? "_"}
+    </p>
   </aside>
 </section>
