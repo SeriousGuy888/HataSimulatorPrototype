@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from "$app/environment"
   import type { Tilemap } from "$lib/Tilemap"
   import type { Tile } from "$lib/types"
   import { onMount } from "svelte"
@@ -12,6 +13,8 @@
   let canvas: HTMLCanvasElement
 
   onMount(() => {
+resizeCanvasToFullScreen()
+
     const ctx = canvas.getContext("2d")
     if (!ctx) {
       throw new Error("Could not get canvas context")
@@ -19,20 +22,29 @@
 
     requestAnimationFrame(gameLoop)
 
-    // let lastTime = 0
+    let lastTime = 0
     function gameLoop(time: number) {
-      // const deltaTime = time - lastTime
-      // lastTime = time
-      // const fps = 1000 / deltaTime
-      // console.log("FPS: " + fps)
+      const deltaTime = time - lastTime
+      const fps = 1000 / deltaTime
 
-      update(ctx!)
+      redraw(ctx!)
+      redrawDebug(ctx!, fps)
 
+      lastTime = time
       requestAnimationFrame(gameLoop)
     }
   })
 
-  function update(ctx: CanvasRenderingContext2D) {
+  if (browser) {
+    window.addEventListener("resize", resizeCanvasToFullScreen)
+  }
+
+  function resizeCanvasToFullScreen() {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+  }
+
+  function redraw(ctx: CanvasRenderingContext2D) {
     // Redraw background
     ctx.fillStyle = "#eee"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -40,6 +52,15 @@
     drawTilemap(ctx!)
 
     // drawHex(ctx!, 50, 50)
+  }
+
+  function redrawDebug(ctx: CanvasRenderingContext2D, fps: number) {
+    ctx.fillStyle = "#000000"
+    ctx.font = "16px Consolas"
+    ctx.textAlign = "left"
+    ctx.textBaseline = "top"
+
+    ctx.fillText(`FPS: ${Math.round(fps)}`, 10, 10)
   }
 
   function drawTilemap(ctx: CanvasRenderingContext2D) {
@@ -86,4 +107,4 @@
   }
 </script>
 
-<canvas bind:this={canvas} width="1280" height="720" />
+<canvas bind:this={canvas} />
