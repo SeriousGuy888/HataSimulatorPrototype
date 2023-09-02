@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Tilemap } from "$lib/Tilemap"
+  import type { Tile } from "$lib/types"
   import { onMount } from "svelte"
 
   export let tilemap: Tilemap
@@ -46,20 +47,17 @@
       for (let y = 0; y < tilemap.height; y++) {
         const tile = tilemap.getTile(x, y)
         if (tile) {
-          let yOffset = 0
-          if(x % 2 === 1) {
-            yOffset = apothem
-          }
+          const yOffset = x % 2 === 1 ? 0 : apothem
 
           const pixelX = x * (hexSideLength * 1.5) + hexSideLength
           const pixelY = y * (apothem * 2) + apothem + yOffset
-          drawHex(ctx, pixelX, pixelY)
+          drawHex(ctx, pixelX, pixelY, tile)
         }
       }
     }
   }
 
-  function drawHex(ctx: CanvasRenderingContext2D, centerX: number, centerY: number) {
+  function drawHex(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, tile: Tile) {
     // Draw hexagon, starting from top left vertex, moving clockwise
     ctx.beginPath()
     ctx.moveTo(centerX - hexSideLength / 2, centerY - apothem)
@@ -78,6 +76,13 @@
     ctx.strokeStyle = "#000000"
     ctx.lineWidth = 1
     ctx.stroke()
+
+    // Draw hex coordinates on hexagon center
+    ctx.fillStyle = "#000000"
+    ctx.font = "24px Consolas"
+    ctx.textAlign = "center"
+    ctx.textBaseline = "middle"
+    ctx.fillText(`${tile.x},${tile.y}`, centerX, centerY)
   }
 </script>
 

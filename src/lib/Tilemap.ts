@@ -11,7 +11,7 @@ export class Tilemap {
   private populateTiles() {
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        this.tiles.set(`${x},${y}`, { type: "grass" })
+        this.tiles.set(`${x},${y}`, { type: "grass", x, y })
       }
     }
   }

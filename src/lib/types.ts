@@ -7,10 +7,11 @@ export interface World {
 
 export interface Tile {
   type: TileType
+  x: number
+  y: number
 }
 
 export type TileType = "grass" | "water" | "sand" | "rock"
-
 
 export interface Character {
   name: string
