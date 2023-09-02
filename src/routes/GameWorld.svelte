@@ -6,10 +6,14 @@
 
   export let tilemap: Tilemap
 
+  const zoomStep = 1.125
+  const maxZoom = zoomStep ** 8
+  const minZoom = zoomStep ** -8
+
   let view = {
     x: 0,
     y: 0,
-    zoom: 1.25,
+    zoom: 1,
   }
   let isPanning = false
   let lastMouseX = 0
@@ -130,12 +134,14 @@
       const worldX = screenX / view.zoom + view.x
       const worldY = screenY / view.zoom + view.y
 
-      const zoomStep = 1.25
       if (event.deltaY > 0) {
         view.zoom /= zoomStep // Zoom out
       } else {
         view.zoom *= zoomStep // Zoom in
       }
+
+      // Clamp zoom
+      view.zoom = Math.max(minZoom, Math.min(maxZoom, view.zoom))
 
       // Calculate new view offset so that the cursor position in world coordinates
       view.x = worldX - screenX / view.zoom
