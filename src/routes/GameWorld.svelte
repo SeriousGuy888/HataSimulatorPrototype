@@ -130,9 +130,12 @@
       const worldX = screenX / view.zoom + view.x
       const worldY = screenY / view.zoom + view.y
 
-      const zoomRate = 0.125 // Adjust to control zoom speed
-      const zoomIncrement = event.deltaY < 0 ? 1 + zoomRate : 1 - zoomRate
-      view.zoom *= zoomIncrement
+      const zoomStep = 1.25
+      if (event.deltaY > 0) {
+        view.zoom /= zoomStep // Zoom out
+      } else {
+        view.zoom *= zoomStep // Zoom in
+      }
 
       // Calculate new view offset so that the cursor position in world coordinates
       view.x = worldX - screenX / view.zoom
