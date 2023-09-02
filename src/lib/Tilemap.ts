@@ -75,26 +75,24 @@ export class Tilemap {
       return
     }
 
-    const toChange = [{ x, y }]
+    const toChange = new Set([`${x},${y}`])
     const stack = [{ x, y }]
-    
+
     while (stack.length > 0) {
       const { x, y } = stack.pop()!
       const neighbours = this.getAdjacentTiles(x, y)
 
       neighbours.forEach((neighbour) => {
-        if (
-          neighbour.type === currTile.type &&
-          toChange!.find((e) => e.x === neighbour.x && e.y === neighbour.y) === undefined
-        ) {
-          toChange!.push({ x: neighbour.x, y: neighbour.y })
+        if (neighbour.type === currTile.type && !toChange.has(`${neighbour.x},${neighbour.y}`)) {
+          toChange.add(`${neighbour.x},${neighbour.y}`)
           stack.push({ x: neighbour.x, y: neighbour.y })
         }
       })
     }
 
-    toChange.forEach((coord) => {
-      this.setTile(coord.x, coord.y, newType)
+    toChange.forEach((coords) => {
+      const [x, y] = coords.split(",").map((e) => parseInt(e))
+      this.setTile(x, y, newType)
     })
   }
 
