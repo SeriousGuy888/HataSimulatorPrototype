@@ -102,20 +102,23 @@ export class Tilemap {
       tileIds[index] = type
     })
 
-    const tilesInOrder: (Tile | null)[] = []
+    const tilesInOrder: (Tile | null)[][] = []
     for (let y = 0; y < this.height; y++) {
+      tilesInOrder.push([])
       for (let x = 0; x < this.width; x++) {
-        tilesInOrder.push(this.getTile(x, y))
+        tilesInOrder[y].push(this.getTile(x, y))
       }
     }
 
-    const tileIdArray = tilesInOrder.map((tile) => tileTypes.findIndex((e) => e === tile?.type))
+    const tileId2dArray: number[][] = tilesInOrder.map((row) =>
+      row.map((tile) => tileTypes.findIndex((e) => e === tile?.type))
+    )
 
     return JSON.stringify({
       width: this.width,
       height: this.height,
       tileIds,
-      tiles: tileIdArray, // Convert tile types to ids
+      tiles: tileId2dArray, // Convert tile types to ids
     })
   }
 
@@ -125,11 +128,11 @@ export class Tilemap {
 
       const tilemap = new Tilemap(width, height)
 
-      tiles.forEach((tileId: number, index: number) => {
-        const x = index % width
-        const y = Math.floor(index / width)
-
-        tilemap.setTile(x, y, tileIds[tileId])
+      tiles.forEach((row: number[], y: number) => {
+        row.forEach((tileId: number, index: number) => {
+          const x = index
+          tilemap.setTile(x, y, tileIds[tileId])
+        })
       })
 
       return tilemap
