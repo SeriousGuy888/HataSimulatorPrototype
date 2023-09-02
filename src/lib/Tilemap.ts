@@ -13,7 +13,7 @@ export class Tilemap {
       for (let y = 0; y < this.height; y++) {
         this.tiles.set(`${x},${y}`, {
           // type: tileTypes[Math.floor(Math.random() * tileTypes.length)],
-          type: "water",
+          type: "deep_water",
           x,
           y,
         })

@@ -1,5 +1,5 @@
 import type { Tilemap } from "$lib/Tilemap"
-import type { Tile } from "$lib/types"
+import type { Tile, TileType } from "$lib/types"
 import { tileToWorld, worldToScreen } from "./cameraUtils"
 import type { View } from "./canvasTypes"
 
@@ -59,11 +59,15 @@ function getHexPath(sideLength: number, apothem: number) {
   return hexPath
 }
 
-const tileTypeColors = {
-  grass: "#1b1",
-  water: "#02f",
+const tileTypeColors: { [key in TileType]: string } = {
+  deep_water: "#02f",
+  shallow_water: "#05f",
+  grass: "#0b0",
+  forest: "#080",
   sand: "#ee8",
-  rock: "#666",
+  mountain: "#666",
+  snow: "#eee",
+  ice: "#2ef",
 }
 
 function drawHex(
