@@ -36,8 +36,27 @@
     ctx.fillStyle = "#eee"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
+    drawTilemap(ctx!)
 
-    drawHex(ctx!, 50, 50)
+    // drawHex(ctx!, 50, 50)
+  }
+
+  function drawTilemap(ctx: CanvasRenderingContext2D) {
+    for (let x = 0; x < tilemap.width; x++) {
+      for (let y = 0; y < tilemap.height; y++) {
+        const tile = tilemap.getTile(x, y)
+        if (tile) {
+          let yOffset = 0
+          if(x % 2 === 1) {
+            yOffset = apothem
+          }
+
+          const pixelX = x * (hexSideLength * 1.5) + hexSideLength
+          const pixelY = y * (apothem * 2) + apothem + yOffset
+          drawHex(ctx, pixelX, pixelY)
+        }
+      }
+    }
   }
 
   function drawHex(ctx: CanvasRenderingContext2D, centerX: number, centerY: number) {
@@ -51,13 +70,14 @@
     ctx.lineTo(centerX - hexSideLength, centerY)
     ctx.closePath()
 
-    ctx.strokeStyle = "#000000"
-    ctx.lineWidth = 3
-    ctx.stroke()
-
     // Fill hexagon
     ctx.fillStyle = "#07bb07"
     ctx.fill()
+
+    // Draw outline
+    ctx.strokeStyle = "#000000"
+    ctx.lineWidth = 1
+    ctx.stroke()
   }
 </script>
 

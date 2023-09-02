@@ -15,4 +15,8 @@ export class Tilemap {
       }
     }
   }
+
+  getTile(x: number, y: number): Tile | null {
+    return this.tiles.get(`${x},${y}`) ?? null
+  }
 }
