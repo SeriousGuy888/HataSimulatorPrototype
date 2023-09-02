@@ -165,11 +165,11 @@
 
   <aside
     id="debug-info-panel"
-    class="absolute left-4 top-4 p-2 rounded bg-black text-white bg-opacity-50 font-mono grid gap-3"
+    class="absolute left-4 top-4 p-2 rounded bg-black text-white bg-opacity-50 font-mono grid gap-2"
   >
     <p>FPS: {Math.round(fps)}</p>
     <section>
-      <p>Zoom: {view.zoom}</p>
+      <p>Zoom: {view.zoom.toFixed(4)}</p>
       <p>X: {view.x.toFixed(2)}</p>
       <p>Y: {view.y.toFixed(2)}</p>
     </section>
