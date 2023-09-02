@@ -32,6 +32,11 @@
   })
 
   function update(ctx: CanvasRenderingContext2D) {
+    // Redraw background
+    ctx.fillStyle = "#eee"
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+
     drawHex(ctx!, 50, 50)
   }
 
