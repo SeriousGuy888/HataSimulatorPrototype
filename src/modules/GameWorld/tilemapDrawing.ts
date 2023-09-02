@@ -7,6 +7,7 @@ export function drawTilemap(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
   view: View,
+  selectedCoords: { x: number; y: number } | null,
   tilemap: Tilemap,
   sideLength: number,
   apothem: number
@@ -35,6 +36,11 @@ export function drawTilemap(
         drawHex(ctx, view, hexPath, screenX, screenY, tile)
       }
     }
+  }
+
+  if (selectedCoords) {
+    const { x, y } = selectedCoords
+    outlineHex(ctx, view, hexPath, sideLength, apothem, x, y)
   }
 }
 
@@ -78,17 +84,38 @@ function drawHex(
   ctx.fillStyle = tileTypeColors[tile.type]
   ctx.fill(hexPath)
 
-  // Outline hexagon
-  // ctx.strokeStyle = "#000000"
-  // ctx.lineWidth = 1
-  // ctx.stroke(hexPath)
-
   // Draw hex coordinates on hexagon center
-  ctx.fillStyle = "#000000"
-  ctx.font = `${24 * view.zoom}px Consolas`
-  ctx.textAlign = "center"
-  ctx.textBaseline = "middle"
-  ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+  // ctx.fillStyle = "#000000"
+  // ctx.font = `${24 * view.zoom}px Consolas`
+  // ctx.textAlign = "center"
+  // ctx.textBaseline = "middle"
+  // ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+
+  // Restore context state
+  ctx.restore()
+}
+
+function outlineHex(
+  ctx: CanvasRenderingContext2D,
+  view: View,
+  hexPath: Path2D,
+  sideLength: number,
+  apothem: number,
+  tileX: number,
+  tileY: number
+) {
+  const { worldX, worldY } = tileToWorld(view, tileX, tileY, sideLength, apothem)
+  const { screenX, screenY } = worldToScreen(view, worldX, worldY)
+
+  // Save current context state to restore later
+  ctx.save()
+  // Translate to hexagon center
+  ctx.translate(screenX, screenY)
+
+  // Outline hexagon
+  ctx.strokeStyle = "#fff"
+  ctx.lineWidth = 5 * view.zoom
+  ctx.stroke(hexPath)
 
   // Restore context state
   ctx.restore()

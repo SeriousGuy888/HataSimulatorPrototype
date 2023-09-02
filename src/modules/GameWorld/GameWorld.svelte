@@ -1,7 +1,6 @@
 <script lang="ts">
   import { browser } from "$app/environment"
   import type { Tilemap } from "$lib/Tilemap"
-  import type { Tile } from "$lib/types"
   import { onMount } from "svelte"
   import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
@@ -19,7 +18,7 @@
     zoom: 1,
   }
 
-  let selectedTile: Tile | null = null
+  let selectedCoords: { x: number; y: number } | null = null
 
   let isPanning = false
   let panningPrevX = 0
@@ -73,7 +72,7 @@
     ctx.fillStyle = "#eee"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-    drawTilemap(ctx, canvas, view, tilemap, sideLength, apothem)
+    drawTilemap(ctx, canvas, view, selectedCoords, tilemap, sideLength, apothem)
   }
 </script>
 
@@ -127,7 +126,7 @@
         const { worldX, worldY } = screenToWorld(view, screenX, screenY)
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
 
-        selectedTile = tilemap.getTile(tileX, tileY)
+        selectedCoords = { x: tileX, y: tileY }
       }
     }}
     on:mousemove={(event) => {
@@ -149,7 +148,7 @@
 
   <aside
     id="debug-info-panel"
-    class="absolute left-4 top-4 p-2 rounded bg-black text-white bg-opacity-50 font-mono grid gap-2"
+    class="absolute left-4 top-4 p-2 rounded bg-black text-white bg-opacity-50 hover:bg-opacity-90 transition-colors font-mono grid gap-2"
   >
     <p>FPS: {Math.round(fps)}</p>
     <section>
@@ -158,7 +157,7 @@
       <p>Y: {view.y.toFixed(2)}</p>
     </section>
     <p>
-      Selected tile: {selectedTile?.x ?? "_"},{selectedTile?.y ?? "_"}
+      Selected tile: {selectedCoords?.x ?? "_"},{selectedCoords?.y ?? "_"}
     </p>
   </aside>
 </section>
