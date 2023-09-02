@@ -3,7 +3,6 @@
   import type { Tilemap } from "$lib/Tilemap"
   import type { Tile } from "$lib/types"
   import { onMount } from "svelte"
-  import { scale } from "svelte/transition"
 
   export let tilemap: Tilemap
 
@@ -26,6 +25,8 @@
 
   let canvas: HTMLCanvasElement
 
+  let fps = 0
+
   onMount(() => {
     resizeCanvasToFullScreen()
 
@@ -39,10 +40,9 @@
     let lastTime = 0
     function gameLoop(time: number) {
       const deltaTime = time - lastTime
-      const fps = 1000 / deltaTime
+      fps = 1000 / deltaTime
 
       redraw(ctx!)
-      redrawDebug(ctx!, fps)
 
       lastTime = time
       requestAnimationFrame(gameLoop)
@@ -64,15 +64,6 @@
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     drawTilemap(ctx)
-  }
-
-  function redrawDebug(ctx: CanvasRenderingContext2D, fps: number) {
-    ctx.fillStyle = "#000000"
-    ctx.font = "16px Consolas"
-    ctx.textAlign = "left"
-    ctx.textBaseline = "top"
-
-    ctx.fillText(`FPS: ${Math.round(fps)}`, 10, 10)
   }
 
   function drawTilemap(ctx: CanvasRenderingContext2D) {
@@ -125,44 +116,59 @@
   }
 </script>
 
-<canvas
-  bind:this={canvas}
-  on:contextmenu|preventDefault
-  on:wheel|preventDefault={(event) => {
-    // Calculate cursor position in screen coordinates
-    const screenX = event.clientX - canvas.getBoundingClientRect().left
-    const screenY = event.clientY - canvas.getBoundingClientRect().top
+<section class="w-full h-full relative">
+  <canvas
+    class="absolute inset-0"
+    bind:this={canvas}
+    on:contextmenu|preventDefault
+    on:wheel|preventDefault={(event) => {
+      // Calculate cursor position in screen coordinates
+      const screenX = event.clientX - canvas.getBoundingClientRect().left
+      const screenY = event.clientY - canvas.getBoundingClientRect().top
 
-    // Calculate cursor position in world coordinates
-    const worldX = screenX / view.zoom + view.x
-    const worldY = screenY / view.zoom + view.y
+      // Calculate cursor position in world coordinates
+      const worldX = screenX / view.zoom + view.x
+      const worldY = screenY / view.zoom + view.y
 
-    const zoomRate = 0.125 // Adjust to control zoom speed
-    const zoomIncrement = event.deltaY < 0 ? 1 + zoomRate : 1 - zoomRate
-    view.zoom *= zoomIncrement
+      const zoomRate = 0.125 // Adjust to control zoom speed
+      const zoomIncrement = event.deltaY < 0 ? 1 + zoomRate : 1 - zoomRate
+      view.zoom *= zoomIncrement
 
-    // Calculate new view offset so that the cursor position in world coordinates
-    view.x = worldX - screenX / view.zoom
-    view.y = worldY - screenY / view.zoom
-  }}
-  on:mousedown={(event) => {
-    isPanning = true
-    lastMouseX = event.clientX
-    lastMouseY = event.clientY
-  }}
-  on:mouseup={() => (isPanning = false)}
-  on:mousemove={(event) => {
-    if (!isPanning) {
-      return
-    }
+      // Calculate new view offset so that the cursor position in world coordinates
+      view.x = worldX - screenX / view.zoom
+      view.y = worldY - screenY / view.zoom
+    }}
+    on:mousedown={(event) => {
+      isPanning = true
+      lastMouseX = event.clientX
+      lastMouseY = event.clientY
+    }}
+    on:mouseup={() => (isPanning = false)}
+    on:mousemove={(event) => {
+      if (!isPanning) {
+        return
+      }
 
-    const deltaX = event.clientX - lastMouseX
-    const deltaY = event.clientY - lastMouseY
+      const deltaX = event.clientX - lastMouseX
+      const deltaY = event.clientY - lastMouseY
 
-    view.x -= deltaX / view.zoom
-    view.y -= deltaY / view.zoom
+      view.x -= deltaX / view.zoom
+      view.y -= deltaY / view.zoom
 
-    lastMouseX = event.clientX
-    lastMouseY = event.clientY
-  }}
-/>
+      lastMouseX = event.clientX
+      lastMouseY = event.clientY
+    }}
+  />
+
+  <aside
+    id="debug-info-panel"
+    class="absolute left-4 top-4 p-2 rounded bg-black text-white bg-opacity-50 font-mono grid gap-3"
+  >
+    <p>FPS: {Math.round(fps)}</p>
+    <section>
+      <p>Zoom: {view.zoom}</p>
+      <p>X: {view.x.toFixed(2)}</p>
+      <p>Y: {view.y.toFixed(2)}</p>
+    </section>
+  </aside>
+</section>
