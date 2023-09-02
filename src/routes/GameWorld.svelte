@@ -77,9 +77,9 @@
     // Optimisation: get the range of tiles that are visible on screen
     // (Not perfect due to yOffset for even columns, but good enough for now)
     const leftmostX = Math.floor((view.x - sideLength) / xGap)
-    const rightmostX = Math.ceil((view.x + canvas.width / view.zoom) / xGap)
+    const rightmostX = Math.ceil((view.x + sideLength + canvas.width / view.zoom) / xGap)
     const topmostY = Math.floor((view.y - apothem) / yGap)
-    const bottommostY = Math.ceil((view.y + canvas.height / view.zoom) / yGap)
+    const bottommostY = Math.ceil((view.y + apothem + canvas.height / view.zoom) / yGap)
 
     // Loop through only the coords of tiles that are visible and draw the tiles
     for (let x = leftmostX; x < rightmostX; x++) {
