@@ -81,6 +81,9 @@
     const topmostY = Math.floor((view.y - apothem) / yGap)
     const bottommostY = Math.ceil((view.y + apothem + canvas.height / view.zoom) / yGap)
 
+    // Optimisation: create the hexagon path only once
+    const hexPath = getHexPath()
+
     // Loop through only the coords of tiles that are visible and draw the tiles
     for (let x = leftmostX; x < rightmostX; x++) {
       for (let y = topmostY; y < bottommostY; y++) {
@@ -96,38 +99,58 @@
           const screenX = (worldX - view.x) * view.zoom
           const screenY = (worldY - view.y) * view.zoom
 
-          drawHex(ctx, screenX, screenY, tile)
+          drawHex(ctx, hexPath, screenX, screenY, tile)
         }
       }
     }
+
+    function getHexPath() {
+      const hexPath = new Path2D()
+
+      // Draw hexagon, starting from top left vertex, moving clockwise
+      hexPath.moveTo(-sideLength / 2, -apothem)
+      hexPath.lineTo(+sideLength / 2, -apothem)
+      hexPath.lineTo(+sideLength, 0)
+      hexPath.lineTo(+sideLength / 2, +apothem)
+      hexPath.lineTo(-sideLength / 2, +apothem)
+      hexPath.lineTo(-sideLength, 0)
+      hexPath.closePath()
+
+      return hexPath
+    }
   }
 
-  function drawHex(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, tile: Tile) {
-    // Draw hexagon, starting from top left vertex, moving clockwise
-    ctx.beginPath()
-    ctx.moveTo(centerX - sideLength / 2, centerY - apothem)
-    ctx.lineTo(centerX + sideLength / 2, centerY - apothem)
-    ctx.lineTo(centerX + sideLength, centerY)
-    ctx.lineTo(centerX + sideLength / 2, centerY + apothem)
-    ctx.lineTo(centerX - sideLength / 2, centerY + apothem)
-    ctx.lineTo(centerX - sideLength, centerY)
-    ctx.closePath()
+  function drawHex(
+    ctx: CanvasRenderingContext2D,
+    hexPath: Path2D,
+    centerX: number,
+    centerY: number,
+    tile: Tile
+  ) {
+    // Save current context state to restore later
+    ctx.save()
+
+    // Translate to hexagon center
+    ctx.translate(centerX, centerY)
 
     // Fill hexagon
     ctx.fillStyle = "#07bb07"
-    ctx.fill()
+    ctx.fill(hexPath)
 
-    // Draw outline
+    // Outline hexagon
     ctx.strokeStyle = "#000000"
     ctx.lineWidth = 1
-    ctx.stroke()
+    ctx.stroke(hexPath)
 
     // Draw hex coordinates on hexagon center
     ctx.fillStyle = "#000000"
     ctx.font = `${24 * view.zoom}px Consolas`
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillText(`${tile.x},${tile.y}`, centerX, centerY)
+    ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+
+    // Restore context state
+    ctx.restore()
   }
 </script>
 
