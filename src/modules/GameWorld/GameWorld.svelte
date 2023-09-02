@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from "$app/environment"
-  import { Tilemap } from "$lib/Tilemap"
+  import type { Tilemap } from "$lib/Tilemap"
   import { onMount } from "svelte"
   import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
@@ -151,7 +151,7 @@
         // Calculate cursor position in world coordinates
         const { worldX, worldY } = screenToWorld(view, screenX, screenY)
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
-        
+
         tilemap.floodFill(tileX, tileY, selectedTileType)
       }
     }}
@@ -214,8 +214,7 @@
             const ser = prompt("Paste serialised tilemap", "")
             if (ser) {
               try {
-                const newTilemap = Tilemap.deserialise(ser)
-                tilemap = newTilemap
+                tilemap.deserialise(ser)
               } catch (e) {
                 alert("Invalid serialised tilemap: " + e)
               }

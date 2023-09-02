@@ -1,3 +1,4 @@
+import { island as islandMapPreset } from "../modules/GameWorld/worldPresets"
 import { tileTypes, type Tile, type TileType } from "./types"
 
 export class Tilemap {
@@ -5,20 +6,11 @@ export class Tilemap {
 
   constructor(public width: number, public height: number) {
     this.tiles = new Map()
-    this.populateTiles()
+    this.loadDefaultMap()
   }
 
-  private populateTiles() {
-    for (let x = 0; x < this.width; x++) {
-      for (let y = 0; y < this.height; y++) {
-        this.tiles.set(`${x},${y}`, {
-          // type: tileTypes[Math.floor(Math.random() * tileTypes.length)],
-          type: "deep_water",
-          x,
-          y,
-        })
-      }
-    }
+  private loadDefaultMap() {
+    this.deserialise(JSON.stringify(islandMapPreset))
   }
 
   getTile(x: number, y: number): Tile | null {
@@ -122,20 +114,21 @@ export class Tilemap {
     })
   }
 
-  static deserialise(serialised: string): Tilemap {
+  deserialise(serialised: string) {
     try {
       const { width, height, tileIds, tiles } = JSON.parse(serialised)
 
-      const tilemap = new Tilemap(width, height)
+      this.width = width
+      this.height = height
+
+      this.tiles.clear()
 
       tiles.forEach((row: number[], y: number) => {
         row.forEach((tileId: number, index: number) => {
           const x = index
-          tilemap.setTile(x, y, tileIds[tileId])
+          this.setTile(x, y, tileIds[tileId])
         })
       })
-
-      return tilemap
     } catch (e) {
       throw new Error("Invalid tilemap.\n" + e)
     }
