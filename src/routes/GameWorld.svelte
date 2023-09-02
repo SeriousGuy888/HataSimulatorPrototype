@@ -71,15 +71,26 @@
   }
 
   function drawTilemap(ctx: CanvasRenderingContext2D) {
-    for (let x = 0; x < tilemap.width; x++) {
-      for (let y = 0; y < tilemap.height; y++) {
+    const xGap = (sideLength / view.zoom) * 1.5
+    const yGap = (apothem / view.zoom) * 2
+
+    // Optimisation: get the range of tiles that are visible on screen
+    // (Not perfect due to yOffset for even columns, but good enough for now)
+    const leftmostX = Math.floor((view.x - sideLength) / xGap)
+    const rightmostX = Math.ceil((view.x + canvas.width / view.zoom) / xGap)
+    const topmostY = Math.floor((view.y - apothem) / yGap)
+    const bottommostY = Math.ceil((view.y + canvas.height / view.zoom) / yGap)
+
+    // Loop through only the coords of tiles that are visible and draw the tiles
+    for (let x = leftmostX; x < rightmostX; x++) {
+      for (let y = topmostY; y < bottommostY; y++) {
         const tile = tilemap.getTile(x, y)
         if (tile) {
           const yOffset = x % 2 === 1 ? 0 : apothem / view.zoom
 
           // Calculate the center of the hexagon in world coordinates
-          const worldX = x * ((sideLength / view.zoom) * 1.5) + sideLength
-          const worldY = y * ((apothem / view.zoom) * 2) + apothem + yOffset
+          const worldX = x * xGap + sideLength
+          const worldY = y * yGap + apothem + yOffset
 
           // Apply zoom and view offset
           const screenX = (worldX - view.x) * view.zoom
