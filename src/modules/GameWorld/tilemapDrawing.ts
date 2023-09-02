@@ -85,9 +85,9 @@ function drawHex(
   ctx.fill(hexPath)
 
   // Outline hexagon
-  ctx.strokeStyle = "#000000"
-  ctx.lineWidth = 1
-  ctx.stroke(hexPath)
+  // ctx.strokeStyle = "#000000"
+  // ctx.lineWidth = 1
+  // ctx.stroke(hexPath)
 
   // Draw hex coordinates on hexagon center
   // ctx.fillStyle = "#000000"
