@@ -75,7 +75,7 @@
 
   function redraw(ctx: CanvasRenderingContext2D) {
     // Redraw background
-    ctx.fillStyle = "#eee"
+    ctx.fillStyle = "#000"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
 
     drawTilemap(ctx, canvas, view, selectedCoords, tilemap, sideLength, apothem)
