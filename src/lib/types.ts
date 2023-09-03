@@ -2,6 +2,7 @@ export interface Tile {
   type: TileType
   x: number
   y: number
+  controlledBy: Player | null
 }
 
 export const tileTypes = [
@@ -19,4 +20,10 @@ export type TileType = (typeof tileTypes)[number]
 export interface City {
   x: number
   y: number
+  controlledBy: Player | null
+}
+
+export interface Player {
+  name: string
+  color: string
 }

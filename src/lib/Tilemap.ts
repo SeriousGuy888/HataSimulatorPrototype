@@ -5,7 +5,10 @@ export class Tilemap {
   tiles: Map<string, Tile> = new Map()
   cities: Map<string, City> = new Map()
 
-  constructor(public width: number, public height: number) {
+  width: number = 1
+  height: number = 1
+
+  constructor() {
     this.loadDefaultMap()
   }
 
@@ -27,6 +30,7 @@ export class Tilemap {
       type,
       x,
       y,
+      controlledBy: null,
     })
   }
 
@@ -94,7 +98,15 @@ export class Tilemap {
       return
     }
 
-    this.cities.set(`${x},${y}`, { x, y })
+    const city = { x, y, controlledBy: null }
+    this.cities.set(`${x},${y}`, city)
+
+    tile.controlledBy = city.controlledBy
+    this.getAdjacentTiles(x, y).forEach((tile) => {
+      if (!tile.controlledBy) {
+        tile.controlledBy = city.controlledBy
+      }
+    })
   }
 
   serialise(): string {
