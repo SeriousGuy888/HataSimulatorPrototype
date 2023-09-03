@@ -42,6 +42,14 @@ export function drawTilemap(
     const { x, y } = selectedCoords
     outlineHex(ctx, view, hexPath, sideLength, apothem, x, y)
   }
+
+
+  tilemap.cities.forEach(city => {
+    const { worldX, worldY } = tileToWorld(view, city.x, city.y, sideLength, apothem)
+    const { screenX, screenY } = worldToScreen(view, worldX, worldY)
+
+    drawCity(ctx, view, screenX, screenY)
+  })
 }
 
 function getHexPath(sideLength: number, apothem: number) {
@@ -120,6 +128,22 @@ function outlineHex(
   ctx.strokeStyle = "#fff"
   ctx.lineWidth = 5 * view.zoom
   ctx.stroke(hexPath)
+
+  // Restore context state
+  ctx.restore()
+}
+
+function drawCity(ctx: CanvasRenderingContext2D, view: View, centerX: number, centerY: number) {
+  // Save current context state to restore later
+  ctx.save()
+
+  // Translate to hexagon center
+  ctx.translate(centerX, centerY)
+
+  // Load and draw city image
+  const cityImage = new Image()
+  cityImage.src = "/structures/city.png"
+  ctx.drawImage(cityImage, -32 * view.zoom, -32 * view.zoom, 64 * view.zoom, 64 * view.zoom)
 
   // Restore context state
   ctx.restore()

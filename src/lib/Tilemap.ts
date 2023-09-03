@@ -1,11 +1,11 @@
 import { island as islandMapPreset } from "../modules/GameWorld/worldPresets"
-import { tileTypes, type Tile, type TileType } from "./types"
+import { tileTypes, type Tile, type TileType, type City } from "./types"
 
 export class Tilemap {
-  tiles: Map<string, Tile>
+  tiles: Map<string, Tile> = new Map()
+  cities: Map<string, City> = new Map()
 
   constructor(public width: number, public height: number) {
-    this.tiles = new Map()
     this.loadDefaultMap()
   }
 
@@ -86,6 +86,15 @@ export class Tilemap {
       const [x, y] = coords.split(",").map((e) => parseInt(e))
       this.setTile(x, y, newType)
     })
+  }
+
+  placeCity(x: number, y: number) {
+    const tile = this.getTile(x, y)
+    if (!tile) {
+      return
+    }
+
+    this.cities.set(`${x},${y}`, { x, y })
   }
 
   serialise(): string {

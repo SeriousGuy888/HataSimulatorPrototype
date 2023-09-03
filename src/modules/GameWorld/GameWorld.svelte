@@ -177,7 +177,8 @@
         const { worldX, worldY } = screenToWorld(view, screenX, screenY)
         const { tileX, tileY } = worldToTile(view, worldX, worldY, sideLength, apothem)
 
-        tilemap.setTile(tileX, tileY, selectedTileType)
+        // tilemap.setTile(tileX, tileY, selectedTileType)
+        tilemap.placeCity(tileX, tileY)
       }
     }}
     on:mouseleave={() => (isPanning = false)}
