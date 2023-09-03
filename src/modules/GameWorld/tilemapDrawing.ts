@@ -26,7 +26,7 @@ export function drawTilemap(
 
   // Optimisation: create the paths only once
   const hexPath = getHexPath(sideLength, apothem)
-  const circlePath = getCirclePath(apothem * 0.75)
+  const circlePath = getSquarePath(apothem * 0.5)
 
   // Loop through only the coords of tiles that are visible and draw the tiles
   for (let x = leftmostX; x < rightmostX; x++) {
@@ -74,9 +74,9 @@ function getHexPath(sideLength: number, apothem: number) {
   return hexPath
 }
 
-function getCirclePath(radius: number) {
+function getSquarePath(sideLen: number) {
   const circlePath = new Path2D()
-  circlePath.arc(0, 0, radius, 0, 2 * Math.PI)
+  circlePath.rect(-sideLen, -sideLen, sideLen * 2, sideLen * 2)
   return circlePath
 }
 
@@ -95,7 +95,7 @@ function drawHex(
   ctx: CanvasRenderingContext2D,
   view: View,
   hexPath: Path2D,
-  circlePath: Path2D,
+  squarePath: Path2D,
   centerX: number,
   centerY: number,
   tile: Tile
@@ -121,7 +121,7 @@ function drawHex(
   if (tile.controlledBy) {
     const colour = tile.controlledBy.colour
     ctx.fillStyle = colour
-    ctx.fill(circlePath)
+    ctx.fill(squarePath)
   }
 
 
