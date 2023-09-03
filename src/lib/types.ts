@@ -21,6 +21,7 @@ export interface City {
   x: number
   y: number
   controlledBy: Player | null
+  population: number
 }
 
 export interface Player {

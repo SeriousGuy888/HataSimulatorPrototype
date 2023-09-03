@@ -102,7 +102,7 @@ export class Tilemap {
       return
     }
 
-    const city = { x, y, controlledBy: player }
+    const city: City = { x, y, controlledBy: player, population: 1 }
     this.cities.set(`${x},${y}`, city)
 
     tile.controlledBy = city.controlledBy
