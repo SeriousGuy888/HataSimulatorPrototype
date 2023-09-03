@@ -1,5 +1,5 @@
 import { island as islandMapPreset } from "../modules/GameWorld/worldPresets"
-import { tileTypes, type Tile, type TileType, type City } from "./types"
+import { tileTypes, type Tile, type TileType, type City, type Player } from "./types"
 
 export class Tilemap {
   tiles: Map<string, Tile> = new Map()
@@ -92,13 +92,17 @@ export class Tilemap {
     })
   }
 
-  placeCity(x: number, y: number) {
+  placeCity(x: number, y: number, player: Player) {
     const tile = this.getTile(x, y)
     if (!tile) {
       return
     }
 
-    const city = { x, y, controlledBy: null }
+    if (this.cities.get(`${x},${y}`)) {
+      return
+    }
+
+    const city = { x, y, controlledBy: player }
     this.cities.set(`${x},${y}`, city)
 
     tile.controlledBy = city.controlledBy

@@ -1,11 +1,19 @@
 <script lang="ts">
   import { browser } from "$app/environment"
   import { onMount } from "svelte"
-  import type { View } from "./canvasTypes"
   import { drawTilemap } from "./tilemapDrawing"
   import { screenToWorld, worldToTile } from "./cameraUtils"
   import { tileTypes, type TileType } from "$lib/types"
-  import { maxZoom, minZoom, selectedCoords, tilemap, view, zoomStep } from "$lib/gameState"
+  import {
+    maxZoom,
+    minZoom,
+    players,
+    playingAs,
+    selectedCoords,
+    tilemap,
+    view,
+    zoomStep,
+  } from "$lib/gameState"
 
   let selectedTileType: TileType = tileTypes[0]
 
@@ -164,8 +172,11 @@
         const { worldX, worldY } = screenToWorld($view, screenX, screenY)
         const { tileX, tileY } = worldToTile($view, worldX, worldY, sideLength, apothem)
 
-        // tilemap.setTile(tileX, tileY, selectedTileType)
-        $tilemap.placeCity(tileX, tileY)
+        $tilemap.placeCity(
+          tileX,
+          tileY,
+          $players[Math.round(Math.random() * ($players.length - 1))]
+        )
       }
     }}
     on:mouseleave={() => (isPanning = false)}

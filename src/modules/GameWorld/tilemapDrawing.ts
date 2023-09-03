@@ -24,8 +24,9 @@ export function drawTilemap(
   const topmostY = Math.floor((view.y - apothem) / yGap)
   const bottommostY = Math.ceil((view.y + apothem + canvas.height / view.zoom) / yGap)
 
-  // Optimisation: create the hexagon path only once
+  // Optimisation: create the paths only once
   const hexPath = getHexPath(sideLength, apothem)
+  const circlePath = getCirclePath(apothem * 0.75)
 
   // Loop through only the coords of tiles that are visible and draw the tiles
   for (let x = leftmostX; x < rightmostX; x++) {
@@ -35,7 +36,7 @@ export function drawTilemap(
         const { worldX, worldY } = tileToWorld(view, x, y, sideLength, apothem)
         const { screenX, screenY } = worldToScreen(view, worldX, worldY)
 
-        drawHex(ctx, view, hexPath, screenX, screenY, tile)
+        drawHex(ctx, view, hexPath, circlePath, screenX, screenY, tile)
       }
     }
   }
@@ -73,6 +74,12 @@ function getHexPath(sideLength: number, apothem: number) {
   return hexPath
 }
 
+function getCirclePath(radius: number) {
+  const circlePath = new Path2D()
+  circlePath.arc(0, 0, radius, 0, 2 * Math.PI)
+  return circlePath
+}
+
 const tileTypeColors: { [key in TileType]: string } = {
   deep_water: "#02f",
   shallow_water: "#05f",
@@ -88,6 +95,7 @@ function drawHex(
   ctx: CanvasRenderingContext2D,
   view: View,
   hexPath: Path2D,
+  circlePath: Path2D,
   centerX: number,
   centerY: number,
   tile: Tile
@@ -108,6 +116,14 @@ function drawHex(
   // ctx.textAlign = "center"
   // ctx.textBaseline = "middle"
   // ctx.fillText(`${tile.x},${tile.y}`, 0, 0)
+
+
+  if (tile.controlledBy) {
+    const colour = tile.controlledBy.colour
+    ctx.fillStyle = colour
+    ctx.fill(circlePath)
+  }
+
 
   // Restore context state
   ctx.restore()

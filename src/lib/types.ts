@@ -25,5 +25,5 @@ export interface City {
 
 export interface Player {
   name: string
-  color: string
+  colour: string
 }
