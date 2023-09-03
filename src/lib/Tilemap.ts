@@ -92,6 +92,10 @@ export class Tilemap {
     })
   }
 
+  getCity(x: number, y: number): City | null {
+    return this.cities.get(`${x},${y}`) ?? null
+  }
+
   placeCity(x: number, y: number, player: Player) {
     const tile = this.getTile(x, y)
     if (!tile) {

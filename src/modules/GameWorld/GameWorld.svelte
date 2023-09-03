@@ -13,6 +13,7 @@
     zoomStep,
   } from "$lib/gameState"
   import DebugInfoPanel from "./DebugInfoPanel.svelte"
+  import SelectedTilePanel from "./SelectedTilePanel.svelte"
 
   let isPanning = false
   let panningPrevX = 0
@@ -58,6 +59,11 @@
 
   if (browser) {
     window.addEventListener("resize", resizeCanvasToFullScreen)
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        selectedCoords.set(null)
+      }
+    })
   }
 
   function resizeCanvasToFullScreen() {
@@ -84,7 +90,7 @@
   }
 </script>
 
-<section class="w-full h-full relative">
+<section class="w-full h-screen relative overflow-clip">
   <canvas
     class="absolute inset-0"
     bind:this={canvas}
@@ -164,4 +170,5 @@
     on:mouseleave={() => (isPanning = false)}
   />
   <DebugInfoPanel {fps} />
+  <SelectedTilePanel />
 </section>

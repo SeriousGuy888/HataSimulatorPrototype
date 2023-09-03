@@ -1,4 +1,4 @@
-import { readable, writable } from "svelte/store"
+import { derived, readable, writable } from "svelte/store"
 import { tileTypes, type Player, type TileType } from "./types"
 import { Tilemap } from "./Tilemap"
 import type { View } from "../modules/GameWorld/canvasTypes"
@@ -13,9 +13,15 @@ export const players = writable<Player[]>([
 ])
 export const playingAs = writable<number>(0)
 
-export const selectedCoords = writable<{ x: number; y: number } | null>(null)
-
 export const tilemap = readable<Tilemap>(new Tilemap())
+
+export const selectedCoords = writable<{ x: number; y: number } | null>(null)
+export const selectedTile = derived([selectedCoords, tilemap], ([$selectedCoords, $tilemap]) =>
+  $tilemap.getTile($selectedCoords?.x ?? 0, $selectedCoords?.y ?? 0)
+)
+export const selectedCity = derived([selectedCoords, tilemap], ([$selectedCoords, $tilemap]) =>
+  $tilemap.getCity($selectedCoords?.x ?? 0, $selectedCoords?.y ?? 0)
+)
 
 export const zoomStep = 1.125
 export const maxZoom = zoomStep ** 8
