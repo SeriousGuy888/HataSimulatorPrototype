@@ -3,6 +3,8 @@ import type { Tile, TileType } from "$lib/types"
 import { tileToWorld, worldToScreen } from "./cameraUtils"
 import type { View } from "./canvasTypes"
 
+let cityImage: CanvasImageSource | null = null
+
 export function drawTilemap(
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement,
@@ -43,12 +45,16 @@ export function drawTilemap(
     outlineHex(ctx, view, hexPath, sideLength, apothem, x, y)
   }
 
-  const cityImage = getCityImage()
+  if (!cityImage) {
+    cityImage = new Image()
+    cityImage.src = "/structures/city.png"
+  }
+
   tilemap.cities.forEach((city) => {
     const { worldX, worldY } = tileToWorld(view, city.x, city.y, sideLength, apothem)
     const { screenX, screenY } = worldToScreen(view, worldX, worldY)
 
-    drawCity(ctx, view, screenX, screenY, cityImage)
+    drawCity(ctx, view, screenX, screenY, cityImage!)
   })
 }
 
@@ -131,12 +137,6 @@ function outlineHex(
 
   // Restore context state
   ctx.restore()
-}
-
-function getCityImage() {
-  const cityImage = new Image()
-  cityImage.src = "/structures/city.png"
-  return cityImage
 }
 
 function drawCity(
