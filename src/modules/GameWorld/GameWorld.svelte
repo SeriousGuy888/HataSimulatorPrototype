@@ -141,6 +141,10 @@
       // If the user is left-clicking, select the tile under the cursor
       if (event.button === 0) {
         const { tileX, tileY } = mouseEventToTileCoords(event)
+        if (!$tilemap.getTile(tileX, tileY)) {
+          return
+        }
+        
         selectedCoords.set({ x: tileX, y: tileY })
       }
 
