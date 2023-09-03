@@ -75,6 +75,16 @@
 
     drawTilemap(ctx, canvas, $view, $selectedCoords, $tilemap, sideLength, apothem)
   }
+  
+  function mouseEventToTileCoords(event: MouseEvent) {
+    const screenX = event.clientX - canvas.getBoundingClientRect().left
+    const screenY = event.clientY - canvas.getBoundingClientRect().top
+
+    const { worldX, worldY } = screenToWorld($view, screenX, screenY)
+    const { tileX, tileY } = worldToTile($view, worldX, worldY, sideLength, apothem)
+
+    return { tileX, tileY }
+  }
 </script>
 
 <section class="w-full h-full relative">
@@ -127,26 +137,12 @@
 
       // If the user is left-clicking, select the tile under the cursor
       if (event.button === 0) {
-        // Calculate cursor position in screen coordinates
-        const screenX = event.clientX - canvas.getBoundingClientRect().left
-        const screenY = event.clientY - canvas.getBoundingClientRect().top
-
-        // Calculate cursor position in world coordinates
-        const { worldX, worldY } = screenToWorld($view, screenX, screenY)
-        const { tileX, tileY } = worldToTile($view, worldX, worldY, sideLength, apothem)
-
+        const { tileX, tileY } = mouseEventToTileCoords(event)
         selectedCoords.set({ x: tileX, y: tileY })
       }
 
       if (event.button === 2 && event.shiftKey) {
-        // Calculate cursor position in screen coordinates
-        const screenX = event.clientX - canvas.getBoundingClientRect().left
-        const screenY = event.clientY - canvas.getBoundingClientRect().top
-
-        // Calculate cursor position in world coordinates
-        const { worldX, worldY } = screenToWorld($view, screenX, screenY)
-        const { tileX, tileY } = worldToTile($view, worldX, worldY, sideLength, apothem)
-
+        const { tileX, tileY } = mouseEventToTileCoords(event)
         $tilemap.floodFill(tileX, tileY, selectedTileType)
       }
     }}
@@ -164,13 +160,7 @@
 
       // If the user is right-clicking, place a tile
       if (isPlacing) {
-        // Calculate cursor position in screen coordinates
-        const screenX = event.clientX - canvas.getBoundingClientRect().left
-        const screenY = event.clientY - canvas.getBoundingClientRect().top
-
-        // Calculate cursor position in world coordinates
-        const { worldX, worldY } = screenToWorld($view, screenX, screenY)
-        const { tileX, tileY } = worldToTile($view, worldX, worldY, sideLength, apothem)
+        const { tileX, tileY } = mouseEventToTileCoords(event)
 
         $tilemap.placeCity(
           tileX,
