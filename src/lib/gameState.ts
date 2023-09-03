@@ -1,5 +1,5 @@
 import { readable, writable } from "svelte/store"
-import type { Player } from "./types"
+import { tileTypes, type Player, type TileType } from "./types"
 import { Tilemap } from "./Tilemap"
 import type { View } from "../modules/GameWorld/canvasTypes"
 
@@ -25,3 +25,5 @@ export const view = writable<View>({
   y: -128,
   zoom: minZoom,
 })
+
+export const selectedTileType = writable<TileType>(tileTypes[0])
