@@ -75,7 +75,7 @@
 
     drawTilemap(ctx, canvas, $view, $selectedCoords, $tilemap, sideLength, apothem)
   }
-  
+
   function mouseEventToTileCoords(event: MouseEvent) {
     const screenX = event.clientX - canvas.getBoundingClientRect().left
     const screenY = event.clientY - canvas.getBoundingClientRect().top
@@ -161,12 +161,7 @@
       // If the user is right-clicking, place a tile
       if (isPlacing) {
         const { tileX, tileY } = mouseEventToTileCoords(event)
-
-        $tilemap.placeCity(
-          tileX,
-          tileY,
-          $players[Math.round(Math.random() * ($players.length - 1))]
-        )
+        $tilemap.setTile(tileX, tileY, selectedTileType)
       }
     }}
     on:mouseleave={() => (isPanning = false)}
@@ -182,9 +177,23 @@
       <p>X: {$view.x.toFixed(2)}</p>
       <p>Y: {$view.y.toFixed(2)}</p>
     </section>
-    <p>
-      Selected tile: {$selectedCoords?.x ?? "_"},{$selectedCoords?.y ?? "_"}
-    </p>
+    <section>
+      <p>
+        Selected tile: {$selectedCoords?.x ?? "_"},{$selectedCoords?.y ?? "_"}
+      </p>
+      <button
+        class="bg-blue-500 hover:bg-blue-600 text-white rounded px-2 py-1"
+        on:click={() => {
+          if ($selectedCoords) {
+            $tilemap.placeCity(
+              $selectedCoords.x,
+              $selectedCoords.y,
+              $players[Math.round(Math.random() * ($players.length - 1))]
+            )
+          }
+        }}>Place City</button
+      >
+    </section>
     <hr class="my-4" />
     <section class="grid gap-2">
       <div class="flex flex-row gap-2">
