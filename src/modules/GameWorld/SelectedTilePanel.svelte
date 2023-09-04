@@ -1,5 +1,5 @@
 <script>
-  import { players, selectedCity, selectedCoords, selectedTile, tilemap } from "$lib/gameState"
+  import { currPlayerTurn, players, selectedCity, selectedCoords, selectedTile, tilemap } from "$lib/gameState"
 </script>
 
 <div
@@ -26,7 +26,7 @@
           $tilemap.placeCity(
             $selectedCoords.x,
             $selectedCoords.y,
-            $players[Math.round(Math.random() * ($players.length - 1))]
+            $players[$currPlayerTurn]
           )
 
           // Update selectedCoords to trigger a re-render (to update the panel)
