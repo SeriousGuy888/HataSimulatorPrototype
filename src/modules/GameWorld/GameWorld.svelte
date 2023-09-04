@@ -4,6 +4,7 @@
   import { drawTilemap } from "./tilemapDrawing"
   import { screenToWorld, worldToTile } from "./cameraUtils"
   import {
+  debugEnabled,
     maxZoom,
     minZoom,
     selectedCoords,
@@ -60,8 +61,14 @@
   if (browser) {
     window.addEventListener("resize", resizeCanvasToFullScreen)
     window.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        selectedCoords.set(null)
+      switch(event.key) {
+        case "Escape":
+          selectedCoords.set(null)
+          break
+        case "F3":
+          debugEnabled.set(!$debugEnabled)
+          event.preventDefault()
+          break
       }
     })
   }
@@ -173,6 +180,8 @@
     }}
     on:mouseleave={() => (isPanning = false)}
   />
-  <DebugInfoPanel {fps} />
+  {#if $debugEnabled}
+     <DebugInfoPanel {fps} />
+  {/if}
   <SelectedTilePanel />
 </section>

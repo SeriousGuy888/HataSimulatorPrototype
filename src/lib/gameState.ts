@@ -11,7 +11,8 @@ export const players = writable<Player[]>([
   { name: "Player 5", colour: "#ff00ff" },
   { name: "Player 6", colour: "#00ffff" },
 ])
-export const playingAs = writable<number>(0)
+export const currPlayerTurn = writable<number>(0)
+export const playingAs = derived(currPlayerTurn, ($currPlayerTurn) => $currPlayerTurn)
 
 export const tilemap = readable<Tilemap>(new Tilemap())
 
@@ -32,4 +33,5 @@ export const view = writable<View>({
   zoom: minZoom,
 })
 
+export const debugEnabled = writable<boolean>(false)
 export const selectedTileType = writable<TileType>(tileTypes[0])
