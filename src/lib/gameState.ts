@@ -11,6 +11,7 @@ export const players = writable<Player[]>([
   { name: "Player 5", colour: "#ff00ff" },
   { name: "Player 6", colour: "#00ffff" },
 ])
+export const currTurnCycle = writable<number>(0)
 export const currPlayerTurn = writable<number>(0)
 export const playingAs = derived(currPlayerTurn, ($currPlayerTurn) => $currPlayerTurn)
 

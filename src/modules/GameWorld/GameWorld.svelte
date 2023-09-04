@@ -15,6 +15,7 @@
   } from "$lib/gameState"
   import DebugInfoPanel from "./DebugInfoPanel.svelte"
   import SelectedTilePanel from "./SelectedTilePanel.svelte"
+  import GameInfoPanel from "./GameInfoPanel.svelte"
 
   let isPanning = false
   let panningPrevX = 0
@@ -180,8 +181,9 @@
     }}
     on:mouseleave={() => (isPanning = false)}
   />
+  <GameInfoPanel />
+  <SelectedTilePanel />
   {#if $debugEnabled}
      <DebugInfoPanel {fps} />
   {/if}
-  <SelectedTilePanel />
 </section>
