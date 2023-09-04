@@ -132,7 +132,7 @@
         panningPrevY = event.clientY
       }
 
-      if (event.button === 2) {
+      if ($debugEnabled && event.button === 2) {
         isPlacing = true
       }
     }}
@@ -155,7 +155,7 @@
         selectedCoords.set({ x: tileX, y: tileY })
       }
 
-      if (event.button === 2 && event.shiftKey) {
+      if ($debugEnabled && event.button === 2 && event.shiftKey) {
         const { tileX, tileY } = mouseEventToTileCoords(event)
         $tilemap.floodFill(tileX, tileY, $selectedTileType)
       }
@@ -173,7 +173,7 @@
       }
 
       // If the user is right-clicking, place a tile
-      if (isPlacing) {
+      if ($debugEnabled && isPlacing) {
         const { tileX, tileY } = mouseEventToTileCoords(event)
         $tilemap.setTile(tileX, tileY, $selectedTileType)
       }
