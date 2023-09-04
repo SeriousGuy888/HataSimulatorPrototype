@@ -3,7 +3,7 @@
 
   function endTurn() {
     $currPlayerTurn = ($currPlayerTurn + 1) % $players.length
-    
+
     if ($currPlayerTurn === 0) {
       $currTurnCycle++
     }
@@ -12,7 +12,7 @@
 
 <div id="panel" class="absolute p-4 top-0 inset-x-0 flex justify-between bg-orange-800">
   <section id="info-displays">
-    <div>
+    <div style={`border-left: 5px solid ${$players[$currPlayerTurn].colour};`}>
       {$players[$currPlayerTurn].name}
     </div>
     <div>
@@ -20,9 +20,9 @@
     </div>
   </section>
   <section id="buttons">
-    <button class="bg-blue-700 hover:bg-blue-800 text-white rounded py-1 px-3" on:click={endTurn}
-      >End Turn</button
-    >
+    <button class="bg-blue-700 hover:bg-blue-800 text-white rounded py-1 px-3" on:click={endTurn}>
+      End Turn
+    </button>
   </section>
 </div>
 
